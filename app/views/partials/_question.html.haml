@@ -11,8 +11,8 @@
     - when :dropdown, :inline_dropdown, :default_dropdown, :slider, :repeater_dropdown
       - r = response_for(@response_set, q, nil, rg)
       = hidden_field_tag "response_set[responses_attributes][#{index}][question_id]", r.question_id
-      = hidden_field_tag "response_set[responses_attributes][#{index}][api_id]", r.api_id
       = hidden_field_tag("response_set[responses_attributes][#{index}][response_group]", rg) if g.try(:display_type) == 'repeater'
+      = hidden_field_tag "response_set[responses_attributes][#{index}][api_id]", r.api_id
       %label{ for:"response_set[responses_attributes][#{index}]", class: renderer }
         = q.text
       = select_tag "response_set[responses_attributes][#{index}][answer_id]", options_from_collection_for_select(q.answers, 'id', 'text'), include_blank: renderer != :slider, disabled: disabled

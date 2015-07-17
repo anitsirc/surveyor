@@ -1,9 +1,9 @@
 = hidden_field_tag "response_set[responses_attributes][#{response_index}][answer_id]", answer.id, class: answer.css_class
-%label{ for:"response_set[responses_attributes][#{response_index}]", class: answer.response_class, style: 'display: block;' }
+%label{ for: "response_set[responses_attributes][#{response_index}]", class: answer.response_class, style: 'display: block;' }
   - return unless answer.response_class.in? %w(date datetime time float integer string text)
   - field_name = "response_set[responses_attributes][#{response_index}][#{rc_to_attr(answer.response_class)}]"
-  - value = r.to_formatted_s.presence || answer.default_value_for(@render_context, I18n.locale)
-  - options = { disabled: disabled, class: answer.css_class }
+  - value = r.to_formatted_s.presence
+  - options = { disabled: disabled, class: answer.css_class, placeholder: answer.default_value_for(@render_context, I18n.locale) }
   - options.merge('data-input-mask' => answer.input_mask, 'data-input-mask-placeholder' => answer.input_mask_placeholder) if answer.input_mask
   = answer.text_for(:pre, @render_context, I18n.locale)
   - case answer.response_class
