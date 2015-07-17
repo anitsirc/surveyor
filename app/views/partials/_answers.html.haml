@@ -1,0 +1,7 @@
+- disabled = defined?(disableFlag) ? disableFlag : false
+- rg ||= nil
+- answers.each do |answer|
+  - if defined?(grid) && grid
+    %td= render('partials/answer', answer: answer, question: question, rg: rg, g: g, disabled: disabled, index: index)
+  - else
+    = render('partials/answer', answer: answer, question: question, rg: rg, g: g, disabled: disabled, index: index)

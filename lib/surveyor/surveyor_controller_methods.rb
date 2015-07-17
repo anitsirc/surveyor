@@ -16,12 +16,12 @@ module Surveyor
 
     # Actions
     def new
-      @surveys_by_access_code = Survey.order("created_at DESC, survey_version DESC").to_a.group_by(&:access_code)
+      @surveys_by_access_code = Survey.order('created_at DESC, survey_version DESC').to_a.group_by(&:access_code)
       redirect_to surveyor_index unless surveyor_index == surveyor.available_surveys_path
     end
 
     def create
-      surveys = Survey.where(:access_code => params[:survey_code]).order("survey_version DESC")
+      surveys = Survey.where(:access_code => params[:survey_code]).order('survey_version DESC')
       if params[:survey_version].blank?
         @survey = surveys.first
       else
@@ -71,7 +71,7 @@ module Surveyor
     end
 
     def update
-      question_ids_for_dependencies = (params[:r] || []).map{|k,v| v["question_id"] }.compact.uniq
+      question_ids_for_dependencies = response_set_params[:responses_attributes].map {|_ord, response| response['question_id'] }.compact.uniq
       saved = load_and_update_response_set_with_retries
 
       return redirect_with_message(surveyor_finish, :notice, t('surveyor.completed_survey')) if saved && params[:finish]
@@ -113,8 +113,8 @@ module Surveyor
         @response_set = ResponseSet.includes({:responses => :answer}).where(:access_code => params[:response_set_code]).first
         if @response_set
           saved = true
-          if params[:r]
-            @response_set.update_from_ui_hash(params[:r])
+          if params[:response_set]
+            @response_set.update_from_ui_hash(response_set_params)
           end
           if params[:finish]
             @response_set.complete!
@@ -126,6 +126,7 @@ module Surveyor
         end
       end
     end
+
     private :load_and_update_response_set
 
     def export
@@ -145,6 +146,10 @@ module Surveyor
     end
 
     private
+
+    def response_set_params
+      params.require(:response_set).permit(responses_attributes: [:id, :question_id, :answer_id, :response_group, :api_id, :text_value, :string_value, :date_value, :time_value, :datetime_value, :integer_value, :float_value, :survey_section_id, :response_other])
+    end
 
     # This is a hook method for surveyor-using applications to override and provide the context object
     def render_context
